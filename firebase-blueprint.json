@@ -1,0 +1,38 @@
+{
+  "entities": {
+    "memories": {
+      "title": "Memories",
+      "description": "Stored user memories, preferences, and facts",
+      "properties": {
+        "text": { "type": "string", "description": "Memory content" },
+        "category": { "type": "string", "description": "Category e.g. preference, habit, personal_fact" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Updated timestamp" }
+      },
+      "required": ["text", "timestamp"]
+    },
+    "conversations": {
+      "title": "Conversations",
+      "description": "Log of past user and assistant messages",
+      "properties": {
+        "role": { "type": "string", "description": "user or assistant" },
+        "message": { "type": "string", "description": "Message transcript text" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Time sent" }
+      },
+      "required": ["role", "message", "timestamp"]
+    },
+    "reminders": {
+      "title": "Reminders",
+      "description": "Scheduled reminders and tasks",
+      "properties": {
+        "title": { "type": "string", "description": "Reminder text" },
+        "time": { "type": "string", "description": "Time display string" },
+        "dueTimestamp": { "type": "number", "description": "Due epoch timestamp in ms" },
+        "completed": { "type": "boolean", "description": "Completion flag" },
+        "notified": { "type": "boolean", "description": "Notification triggered flag" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Created time" }
+      },
+      "required": ["title", "completed"]
+    }
+  }
+}

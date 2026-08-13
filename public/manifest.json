@@ -1,0 +1,19 @@
+{
+  "short_name": "Tune AI",
+  "name": "Tune AI Companion",
+  "description": "Emotionally Intelligent Voice & Multimodal AI Companion with Multi-Speaker Directory & Noise Isolation",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#06060a",
+  "theme_color": "#06060a",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["utilities", "productivity", "entertainment"]
+}
