@@ -1058,7 +1058,7 @@ export class ToolManager {
 
   /**
    * Tool: createReminder
-   * Adds a reminder to the UI.
+   * Adds a reminder to the UI and schedules a real-time alarm trigger if relative time is provided.
    */
   private async createReminder(text: string, time: string): Promise<any> {
     const reminder: Reminder = {
@@ -1068,6 +1068,44 @@ export class ToolManager {
       active: true,
     };
 
+    // Parse relative time delay (e.g. "30 sec", "30 seconds", "30s", "1 min", "5 minutes")
+    let delayMs: number | null = null;
+    const lowerTime = time.toLowerCase().trim();
+
+    const secMatch = lowerTime.match(/(\d+)\s*(s|sec|second|seconds)/);
+    const minMatch = lowerTime.match(/(\d+)\s*(m|min|minute|minutes)/);
+    const hourMatch = lowerTime.match(/(\d+)\s*(h|hr|hour|hours)/);
+
+    if (secMatch) {
+      delayMs = parseInt(secMatch[1], 10) * 1000;
+    } else if (minMatch) {
+      delayMs = parseInt(minMatch[1], 10) * 60 * 1000;
+    } else if (hourMatch) {
+      delayMs = parseInt(hourMatch[1], 10) * 360 * 1000;
+    } else if (lowerTime.includes("30 sec") || lowerTime.includes("30s")) {
+      delayMs = 30000;
+    }
+
+    if (delayMs && delayMs > 0) {
+      console.log(`⏰ Scheduling relative alarm for reminder "${text}" in ${delayMs / 1000} seconds`);
+      setTimeout(() => {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(
+            new CustomEvent("pa_trigger_alarm", {
+              detail: {
+                id: reminder.id,
+                title: `⏰ Reminder Alarm: ${text}`,
+                topic: `Scheduled for ${time}`,
+                time: time,
+                alarmEnabled: true,
+                completed: false
+              }
+            })
+          );
+        }
+      }, delayMs);
+    }
+
     this.emit("reminderCreated", reminder);
 
     return {
@@ -1075,7 +1113,10 @@ export class ToolManager {
       text,
       time,
       id: reminder.id,
-      message: `I've created a reminder for "${text}" set for ${time}.`
+      scheduledDelayMs: delayMs,
+      message: `I've created a reminder for "${text}" set for ${time}.${
+        delayMs ? ` Alarm will ring in ${delayMs / 1000} seconds!` : ""
+      }`
     };
   }
 

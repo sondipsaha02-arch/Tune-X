@@ -52,11 +52,25 @@ export class LiveSession {
   async connect(): Promise<void> {
     if (this.state !== "disconnected" && this.state !== "connecting") return;
 
+    if (typeof window !== "undefined" && !(this as any).hasApiKeyListener) {
+      (this as any).hasApiKeyListener = true;
+      window.addEventListener("tune-api-key-updated", () => {
+        console.log("🔑 Gemini API Key updated! Reconnecting Tune Live session...");
+        this.isUserDisconnecting = false;
+        this.disconnect();
+        setTimeout(() => {
+          this.connect();
+        }, 400);
+      });
+    }
+
     this.isUserDisconnecting = false;
     this.updateState("connecting");
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const customApiKey = typeof localStorage !== "undefined" ? (localStorage.getItem("custom_gemini_api_key") || "").trim().replace(/^["']|["']$/g, '') : "";
+    const queryParam = customApiKey ? `?apiKey=${encodeURIComponent(customApiKey)}` : "";
+    const wsUrl = `${protocol}//${window.location.host}/ws${queryParam}`;
 
     console.log(`🔌 Connecting to Tune WebSocket proxy at: ${wsUrl}`);
 
@@ -226,6 +240,13 @@ export class LiveSession {
               localStorage.setItem("tune_long_term_memory", JSON.stringify(msg.data));
               if (this.callbacks.onMemoryUpdated) {
                 this.callbacks.onMemoryUpdated(msg.data);
+              }
+              break;
+
+            case "paPlanUpdated":
+              console.log("📅 Intelligent PA Plan updated via Live WS:", msg.plan);
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("pa_plan_updated", { detail: { plan: msg.plan } }));
               }
               break;
 

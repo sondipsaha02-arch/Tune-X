@@ -196,14 +196,19 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 
   const handleSaveApiKey = () => {
     if (typeof localStorage !== "undefined") {
-      if (customApiKey.trim()) {
-        localStorage.setItem("custom_gemini_api_key", customApiKey.trim());
-        setApiKeySaveStatus("Saved & Active!");
+      const cleanKey = customApiKey.trim().replace(/^["']|["']$/g, '');
+      if (cleanKey) {
+        localStorage.setItem("custom_gemini_api_key", cleanKey);
+        setCustomApiKey(cleanKey);
+        setApiKeySaveStatus("Saved & Reconnecting Tune...");
+        window.dispatchEvent(new CustomEvent("tune-api-key-updated", { detail: cleanKey }));
       } else {
         localStorage.removeItem("custom_gemini_api_key");
+        setCustomApiKey("");
         setApiKeySaveStatus("Cleared (Using System Default)");
+        window.dispatchEvent(new CustomEvent("tune-api-key-updated", { detail: "" }));
       }
-      setTimeout(() => setApiKeySaveStatus(""), 3000);
+      setTimeout(() => setApiKeySaveStatus(""), 4000);
     }
   };
 
@@ -212,7 +217,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
     if (typeof localStorage !== "undefined") {
       localStorage.removeItem("custom_gemini_api_key");
       setApiKeySaveStatus("Cleared (Using System Default)");
-      setTimeout(() => setApiKeySaveStatus(""), 3000);
+      window.dispatchEvent(new CustomEvent("tune-api-key-updated", { detail: "" }));
+      setTimeout(() => setApiKeySaveStatus(""), 4000);
     }
   };
 

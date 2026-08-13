@@ -48,7 +48,8 @@ import {
   Smartphone,
   Download,
   CheckCircle2,
-  Share2
+  Share2,
+  Bot
 } from "lucide-react";
 
 // Live imports
@@ -82,6 +83,7 @@ import { AgenticHub } from "./components/AgenticHub";
 import { ChatHistory } from "./components/ChatHistory";
 import { MistakeFocusBoard } from "./components/MistakeFocusBoard";
 import { FileManagerModal } from "./components/FileManagerModal";
+import { IntelligentPAManager } from "./components/IntelligentPAManager";
 
 // Firebase Persistence Helpers
 import { subscribeMemories, addMemory, deleteMemory } from "./lib/firebase";
@@ -96,6 +98,7 @@ export default function App() {
   const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(false);
   const [isMistakeFocusBoardOpen, setIsMistakeFocusBoardOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isIntelligentPAOpen, setIsIntelligentPAOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isCameraSharing, setIsCameraSharing] = useState(false);
@@ -1287,6 +1290,15 @@ export default function App() {
           </button>
 
           <button
+            onClick={() => setIsIntelligentPAOpen(true)}
+            className="px-2.5 py-1.5 bg-gradient-to-r from-cyan-500/20 to-blue-600/20 hover:from-cyan-500/30 hover:to-blue-600/30 border border-cyan-500/30 rounded-xl text-cyan-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer active:scale-95 shadow-sm"
+            title="Intelligent PA: Goal Assessment, Daily Todo List & Alarms"
+          >
+            <Bot className="w-3.5 h-3.5 text-cyan-400" />
+            <span>PA Goal Planner</span>
+          </button>
+
+          <button
             onClick={() => setIsShareModalOpen(true)}
             className="px-2.5 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 rounded-xl text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition cursor-pointer active:scale-95 shadow-sm"
             title="Share App or Open on Mobile Phone"
@@ -1433,6 +1445,11 @@ export default function App() {
       <FileManagerModal
         isOpen={isFileManagerOpen}
         onClose={() => setIsFileManagerOpen(false)}
+      />
+
+      <IntelligentPAManager
+        isOpen={isIntelligentPAOpen}
+        onClose={() => setIsIntelligentPAOpen(false)}
       />
 
       {/* 11. AUDIO/GUIDE COMPACT MODAL */}
